@@ -1,8 +1,10 @@
-package kyj.schedule_manage_v2.schedule.service;
+package kyj.schedule_manage_v2.domain.schedule.service;
 
-import kyj.schedule_manage_v2.entity.Schedule;
-import kyj.schedule_manage_v2.schedule.dto.*;
-import kyj.schedule_manage_v2.schedule.repository.ScheduleRepository;
+import kyj.schedule_manage_v2.domain.schedule.dto.*;
+import kyj.schedule_manage_v2.domain.schedule.entity.Schedule;
+import kyj.schedule_manage_v2.domain.user.entity.User;
+import kyj.schedule_manage_v2.domain.schedule.repository.ScheduleRepository;
+import kyj.schedule_manage_v2.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,14 +14,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
+    private final UserRepository userRepository;
 
-    public CreateScheduleResponse save(CreateScheduleRequest request) {
-        Schedule schedule = new Schedule(request.getUserName(), request.getTitle(), request.getContent());
+    public CreateScheduleResponse saveSchedule(CreateScheduleRequest request) {
+        User user = userRepository.findById(request.getUserId()).orElseThrow(() -> new IllegalStateException("없는 유저 입니다"));
+
+        Schedule schedule = new Schedule(user, request.getTitle(), request.getContent());
         Schedule saveSchedule = scheduleRepository.save(schedule);
+
         return CreateScheduleResponse
                 .builder()
                 .id(saveSchedule.getId())
-                .userName(saveSchedule.getUserName())
+                .userId(saveSchedule.getUser().getId())
+                .userName(saveSchedule.getUser().getUserName())
                 .title(saveSchedule.getTitle())
                 .content(saveSchedule.getContent())
                 .createAt(saveSchedule.getCreateAt())
@@ -29,10 +36,12 @@ public class ScheduleService {
 
     public SearchScheduleResponse getSchedule(Long scheduleId) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new IllegalStateException("없는 일정 입니다"));
+
         return SearchScheduleResponse
                 .builder()
                 .id(schedule.getId())
-                .userName(schedule.getUserName())
+                .userId(schedule.getUser().getId())
+                .userName(schedule.getUser().getUserName())
                 .title(schedule.getTitle())
                 .content(schedule.getContent())
                 .createAt(schedule.getCreateAt())
@@ -47,7 +56,8 @@ public class ScheduleService {
                     SearchScheduleResponse
                             .builder()
                             .id(schedule.getId())
-                            .userName(schedule.getUserName())
+                            .userId(schedule.getUser().getId())
+                            .userName(schedule.getUser().getUserName())
                             .title(schedule.getTitle())
                             .content(schedule.getContent())
                             .createAt(schedule.getCreateAt())
@@ -62,9 +72,10 @@ public class ScheduleService {
         return UpdateScheduleResponse
                 .builder()
                 .id(schedule.getId())
+                .userId(schedule.getUser().getId())
+                .userName(schedule.getUser().getUserName())
                 .title(schedule.getTitle())
                 .content(schedule.getContent())
-                .userName(schedule.getUserName())
                 .createAt(schedule.getCreateAt())
                 .updateAt(schedule.getUpdateAt())
                 .build();

@@ -1,4 +1,4 @@
-package kyj.schedule_manage_v2.schedule.dto;
+package kyj.schedule_manage_v2.domain.user.dto;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -7,19 +7,17 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class UpdateScheduleResponse {
+public class SearchUserResponse {
     private final Long id;
     private final String userName;
-    private final String title;
-    private final String content;
+    private final String email;
     private final LocalDateTime createAt;
     private final LocalDateTime updateAt;
 
-    public UpdateScheduleResponse(Long id, String userName, String title, String content, LocalDateTime createAt, LocalDateTime updateAt) {
+    public SearchUserResponse(Long id, String userName, String email, LocalDateTime createAt, LocalDateTime updateAt) {
         this.id = id;
         this.userName = userName;
-        this.title = title;
-        this.content = content;
+        this.email = email;
         this.createAt = createAt;
         this.updateAt = updateAt;
     }

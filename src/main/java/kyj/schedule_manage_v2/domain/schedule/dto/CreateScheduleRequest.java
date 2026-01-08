@@ -1,4 +1,4 @@
-package kyj.schedule_manage_v2.schedule.dto;
+package kyj.schedule_manage_v2.domain.schedule.dto;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -6,12 +6,12 @@ import lombok.Getter;
 @Getter
 @Builder
 public class CreateScheduleRequest {
-    private String userName;
+    private Long userId;
     private String title;
     private String content;
 
-    public CreateScheduleRequest(String userName, String title, String content) {
-        this.userName = userName;
+    public CreateScheduleRequest(Long userId, String title, String content) {
+        this.userId = userId;
         this.title = title;
         this.content = content;
     }
