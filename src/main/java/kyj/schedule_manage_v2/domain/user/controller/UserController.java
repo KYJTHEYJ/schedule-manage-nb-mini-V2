@@ -1,5 +1,6 @@
 package kyj.schedule_manage_v2.domain.user.controller;
 
+import jakarta.servlet.http.HttpSession;
 import kyj.schedule_manage_v2.domain.user.dto.*;
 import kyj.schedule_manage_v2.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
+    //region user CRUD
     @PostMapping("/api/users")
     public ResponseEntity<CreateUserResponse> createUser(@RequestBody CreateUserRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.saveUser(request));
@@ -39,4 +41,29 @@ public class UserController {
         userService.deleteUser(userId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+    //endregion
+
+    //region login
+    @PostMapping("/api/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request, HttpSession session) {
+        LoginResponse loginResponse = userService.login(request);
+        UserSession userSession = UserSession
+                .builder()
+                .id(loginResponse.id())
+                .email(loginResponse.email())
+                .userName(loginResponse.userName())
+                .build();
+        session.setAttribute("loginUser", userSession);
+        return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
+    }
+
+    @PostMapping("/api/logOut")
+    public ResponseEntity<Void> logOut(@SessionAttribute(name = "loginUser") HttpSession session) {
+        if(session == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        session.invalidate();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+    //endregion
 }

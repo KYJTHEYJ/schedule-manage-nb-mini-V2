@@ -13,8 +13,14 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
 
+    //region user CRUD
     public CreateUserResponse saveUser(CreateUserRequest request) {
         User user = new User(request.getUserName(), request.getEmail(), request.getPassword());
+
+        if(request.getPassword() == null || request.getPassword().length() < 8) {
+            throw new IllegalStateException("비밀번호는 8자리 이상 입력되어야 합니다");
+        }
+
         User saveUser = userRepository.save(user);
         return CreateUserResponse
                 .builder()
@@ -74,4 +80,23 @@ public class UserService {
 
         userRepository.deleteById(userId);
     }
+    //endregion
+
+    //region login
+    public LoginResponse login(LoginRequest request) {
+       User loginUser = userRepository.findUserByEmail(request.email())
+               .orElseThrow(() -> new IllegalStateException("아이디와 비밀번호를 다시 확인해주세요"));
+
+       if(!loginUser.getPassword().equals(request.password())) {
+           throw new IllegalStateException("아이디와 비밀번호를 다시 확인해주세요");
+       }
+
+       return LoginResponse
+               .builder()
+               .id(loginUser.getId())
+               .email(loginUser.getEmail())
+               .userName(loginUser.getUserName())
+               .build();
+    }
+    //endregion
 }

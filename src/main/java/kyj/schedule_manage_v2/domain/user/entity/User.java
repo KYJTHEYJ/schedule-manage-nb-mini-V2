@@ -1,9 +1,6 @@
 package kyj.schedule_manage_v2.domain.user.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import kyj.schedule_manage_v2.util.entity.Base;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -18,6 +15,7 @@ public class User extends Base {
     private Long id;
     private String userName;
     private String email;
+    @Column(nullable = false)
     private String password;
 
     public User(String userName, String email, String password) {
