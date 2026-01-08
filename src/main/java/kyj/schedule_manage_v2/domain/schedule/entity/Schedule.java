@@ -1,6 +1,8 @@
-package kyj.schedule_manage_v2.entity;
+package kyj.schedule_manage_v2.domain.schedule.entity;
 
 import jakarta.persistence.*;
+import kyj.schedule_manage_v2.util.entity.Base;
+import kyj.schedule_manage_v2.domain.user.entity.User;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,14 +15,15 @@ public class Schedule extends Base {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String userName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "fk_user_id", value = ConstraintMode.NO_CONSTRAINT))
+    private User user;
 
     private String title;
     private String content;
 
-    public Schedule(String userName, String title, String content) {
-        this.userName = userName;
+    public Schedule(User user, String title, String content) {
+        this.user = user;
         this.title = title;
         this.content = content;
     }

@@ -1,8 +1,8 @@
-package kyj.schedule_manage_v2.schedule.controller;
+package kyj.schedule_manage_v2.domain.schedule.controller;
 
-import kyj.schedule_manage_v2.schedule.dto.CreateScheduleRequest;
-import kyj.schedule_manage_v2.schedule.dto.CreateScheduleResponse;
-import kyj.schedule_manage_v2.schedule.service.ScheduleService;
+import kyj.schedule_manage_v2.domain.schedule.dto.CreateScheduleRequest;
+import kyj.schedule_manage_v2.domain.schedule.dto.CreateScheduleResponse;
+import kyj.schedule_manage_v2.domain.schedule.service.ScheduleService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,13 +39,14 @@ class ScheduleControllerTest {
     void saveSchedule() throws Exception {
         // 테스트 안, 테스트 결과 작성
         CreateScheduleRequest request = CreateScheduleRequest.builder()
-                .userName("tester")
+                .userId(1L)
                 .title("TEST")
                 .content("testing")
                 .build();
 
         CreateScheduleResponse response = CreateScheduleResponse.builder()
                 .id(1L)
+                .userId(1L)
                 .title("TEST")
                 .content("testing")
                 .userName("tester")
@@ -57,7 +58,7 @@ class ScheduleControllerTest {
         // request가 비어있을 텐데, any()으로 채워줌
         // request 위에서 만든 사항을 전달할 수 없는게, service 단 흐름 처리 중에 객체의 주소값이 달라져서
         // content로 넘겨주는게 불가능함, null 발생
-        given(scheduleService.save(any())).willReturn(response);
+        given(scheduleService.saveSchedule(any())).willReturn(response);
 
         // when (실행)
         ResultActions resultActions = mockMvc.perform(post("/api/schedules")
@@ -68,7 +69,7 @@ class ScheduleControllerTest {
         resultActions.andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(response.getId()))
-                .andExpect(jsonPath("$.userName").value(response.getUserName()))
+                .andExpect(jsonPath("$.user_id").value(response.getUserName()))
                 .andExpect(jsonPath("$.title").value(response.getTitle()))
                 .andExpect(jsonPath("$.content").value(response.getContent()))
                 .andExpect(jsonPath("$.createAt").exists())

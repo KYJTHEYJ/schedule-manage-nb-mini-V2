@@ -1,4 +1,4 @@
-package kyj.schedule_manage_v2.schedule.dto;
+package kyj.schedule_manage_v2.domain.schedule.dto;
 
 import lombok.Getter;
 

@@ -1,7 +1,7 @@
-package kyj.schedule_manage_v2.schedule.controller;
+package kyj.schedule_manage_v2.domain.schedule.controller;
 
-import kyj.schedule_manage_v2.schedule.dto.*;
-import kyj.schedule_manage_v2.schedule.service.ScheduleService;
+import kyj.schedule_manage_v2.domain.schedule.dto.*;
+import kyj.schedule_manage_v2.domain.schedule.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,7 @@ public class ScheduleController {
 
     @PostMapping("/api/schedules")
     public ResponseEntity<CreateScheduleResponse> saveSchedule(@RequestBody CreateScheduleRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(scheduleService.save(request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(scheduleService.saveSchedule(request));
     }
 
     @GetMapping("/api/schedules/{schedule_id}")
