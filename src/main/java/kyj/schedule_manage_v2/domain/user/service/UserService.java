@@ -14,7 +14,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     public CreateUserResponse saveUser(CreateUserRequest request) {
-        User user = new User(request.getUserName(), request.getEmail());
+        User user = new User(request.getUserName(), request.getEmail(), request.getPassword());
         User saveUser = userRepository.save(user);
         return CreateUserResponse
                 .builder()
@@ -55,7 +55,7 @@ public class UserService {
 
     public UpdateUserResponse updateUser(Long userId, UpdateUserRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalStateException("없는 유저 입니다"));
-        user.update(request.getUserName(), request.getEmail());
+        user.update(request.getUserName(), request.getEmail(),  request.getPassword());
 
         return UpdateUserResponse
                 .builder()
