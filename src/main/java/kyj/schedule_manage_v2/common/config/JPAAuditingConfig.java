@@ -1,4 +1,4 @@
-package kyj.schedule_manage_v2.config;
+package kyj.schedule_manage_v2.common.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;

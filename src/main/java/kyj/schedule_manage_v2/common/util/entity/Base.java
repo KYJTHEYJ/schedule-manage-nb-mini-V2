@@ -1,4 +1,4 @@
-package kyj.schedule_manage_v2.util.entity;
+package kyj.schedule_manage_v2.common.util.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

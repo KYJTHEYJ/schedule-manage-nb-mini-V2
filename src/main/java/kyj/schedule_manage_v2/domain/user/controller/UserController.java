@@ -1,6 +1,7 @@
 package kyj.schedule_manage_v2.domain.user.controller;
 
 import jakarta.servlet.http.HttpSession;
+import kyj.schedule_manage_v2.common.annotation.SessionCheck;
 import kyj.schedule_manage_v2.domain.user.dto.*;
 import kyj.schedule_manage_v2.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static kyj.schedule_manage_v2.common.util.Constants.LOGIN_SESSION_NAME;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,6 +25,7 @@ public class UserController {
     }
 
     @GetMapping("/api/users/{user_id}")
+    @SessionCheck
     public ResponseEntity<SearchUserResponse> getUser(@PathVariable(name = "user_id") Long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(userId));
     }
@@ -32,13 +36,18 @@ public class UserController {
     }
 
     @PutMapping("/api/users/{user_id}")
-    public ResponseEntity<UpdateUserResponse> updateUser(@PathVariable(name = "user_id") Long userId, @RequestBody UpdateUserRequest request) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userId, request));
+    @SessionCheck
+    public ResponseEntity<UpdateUserResponse> updateUser(@PathVariable(name = "user_id") Long userId
+            , @RequestBody UpdateUserRequest request
+            , @SessionAttribute(name = "loginUser") LoginSessionData loginSessionData) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userId, request, loginSessionData));
     }
 
     @DeleteMapping("/api/users/{user_id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable(name = "user_id") Long userId) {
-        userService.deleteUser(userId);
+    @SessionCheck
+    public ResponseEntity<Void> deleteUser(@PathVariable(name = "user_id") Long userId
+            , @SessionAttribute(name = "loginUser") LoginSessionData loginSessionData) {
+        userService.deleteUser(userId, loginSessionData);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
     //endregion
@@ -47,21 +56,20 @@ public class UserController {
     @PostMapping("/api/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request, HttpSession session) {
         LoginResponse loginResponse = userService.login(request);
-        UserSession userSession = UserSession
+        LoginSessionData loginSessionData = LoginSessionData
                 .builder()
                 .id(loginResponse.id())
-                .email(loginResponse.email())
-                .userName(loginResponse.userName())
                 .build();
-        session.setAttribute("loginUser", userSession);
+        session.setAttribute(LOGIN_SESSION_NAME, loginSessionData);
         return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
     }
 
-    @PostMapping("/api/logOut")
-    public ResponseEntity<Void> logOut(@SessionAttribute(name = "loginUser") HttpSession session) {
-        if(session == null) {
+    @PostMapping("/api/logout")
+    public ResponseEntity<Void> logOut(@SessionAttribute(name = "loginUser") LoginSessionData loginSessionData, HttpSession session) {
+        if(loginSessionData == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+
         session.invalidate();
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

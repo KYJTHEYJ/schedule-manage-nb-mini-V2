@@ -58,7 +58,7 @@ class ScheduleControllerTest {
         // request가 비어있을 텐데, any()으로 채워줌
         // request 위에서 만든 사항을 전달할 수 없는게, service 단 흐름 처리 중에 객체의 주소값이 달라져서
         // content로 넘겨주는게 불가능함, null 발생
-        given(scheduleService.saveSchedule(any())).willReturn(response);
+        //given(scheduleService.saveSchedule(any())).willReturn(response);
 
         // when (실행)
         ResultActions resultActions = mockMvc.perform(post("/api/schedules")

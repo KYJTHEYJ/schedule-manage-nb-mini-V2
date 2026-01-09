@@ -1,7 +1,7 @@
 package kyj.schedule_manage_v2.domain.schedule.entity;
 
 import jakarta.persistence.*;
-import kyj.schedule_manage_v2.util.entity.Base;
+import kyj.schedule_manage_v2.common.util.entity.Base;
 import kyj.schedule_manage_v2.domain.user.entity.User;
 import lombok.AccessLevel;
 import lombok.Getter;
