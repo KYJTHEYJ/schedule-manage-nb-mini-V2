@@ -1,5 +1,8 @@
 package kyj.schedule_manage_v2.domain.user.service;
 
+import kyj.schedule_manage_v2.common.exception.LoginErrorException;
+import kyj.schedule_manage_v2.common.exception.NotFoundDataErrorException;
+import kyj.schedule_manage_v2.common.exception.UnAuthroizedAccessErrorException;
 import kyj.schedule_manage_v2.domain.user.dto.*;
 import kyj.schedule_manage_v2.domain.user.entity.User;
 import kyj.schedule_manage_v2.domain.user.repository.UserRepository;
@@ -17,10 +20,6 @@ public class UserService {
     public CreateUserResponse saveUser(CreateUserRequest request) {
         User user = new User(request.getUserName(), request.getEmail(), request.getPassword());
 
-        if(request.getPassword() == null || request.getPassword().length() < 8) {
-            throw new IllegalStateException("비밀번호는 8자리 이상 입력되어야 합니다");
-        }
-
         User saveUser = userRepository.save(user);
         return CreateUserResponse
                 .builder()
@@ -32,8 +31,12 @@ public class UserService {
                 .build();
     }
 
-    public SearchUserResponse getUser(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalStateException("없는 유저 입니다"));
+    public SearchUserResponse getUser(Long userId, LoginSessionData loginSessionData) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundDataErrorException("없는 유저 입니다"));
+
+        if(!user.getId().equals(loginSessionData.id())) {
+            throw new UnAuthroizedAccessErrorException("본인의 계정 정보만 수정 할 수 있습니다");
+        }
 
         return SearchUserResponse
                 .builder()
@@ -60,10 +63,10 @@ public class UserService {
     }
 
     public UpdateUserResponse updateUser(Long userId, UpdateUserRequest request, LoginSessionData loginSessionData) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalStateException("없는 유저 입니다"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundDataErrorException("없는 유저 입니다"));
 
         if(!user.getId().equals(loginSessionData.id())) {
-            throw new IllegalStateException("본인의 계정 정보만 수정 할 수 있습니다");
+            throw new UnAuthroizedAccessErrorException("본인의 계정 정보만 수정 할 수 있습니다");
         }
 
         user.update(request.getUserName(), request.getEmail(),  request.getPassword());
@@ -79,10 +82,10 @@ public class UserService {
     }
 
     public void deleteUser(Long userId, LoginSessionData loginSessionData) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalStateException("없는 유저 입니다"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundDataErrorException("없는 유저 입니다"));
 
         if(!user.getId().equals(loginSessionData.id())) {
-            throw new IllegalStateException("본인의 계정 정보만 수정 할 수 있습니다");
+            throw new UnAuthroizedAccessErrorException("본인의 계정 정보만 수정 할 수 있습니다");
         }
 
         userRepository.deleteById(userId);
@@ -92,10 +95,10 @@ public class UserService {
     //region login
     public LoginResponse login(LoginRequest request) {
        User loginUser = userRepository.findUserByEmail(request.email())
-               .orElseThrow(() -> new IllegalStateException("아이디와 비밀번호를 다시 확인해주세요"));
+               .orElseThrow(() -> new LoginErrorException("아이디와 비밀번호를 다시 확인해주세요"));
 
        if(!loginUser.getPassword().equals(request.password())) {
-           throw new IllegalStateException("아이디와 비밀번호를 다시 확인해주세요");
+           throw new LoginErrorException("아이디와 비밀번호를 다시 확인해주세요");
        }
 
        return LoginResponse

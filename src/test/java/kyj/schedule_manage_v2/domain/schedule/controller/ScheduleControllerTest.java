@@ -39,7 +39,6 @@ class ScheduleControllerTest {
     void saveSchedule() throws Exception {
         // 테스트 안, 테스트 결과 작성
         CreateScheduleRequest request = CreateScheduleRequest.builder()
-                .userId(1L)
                 .title("TEST")
                 .content("testing")
                 .build();

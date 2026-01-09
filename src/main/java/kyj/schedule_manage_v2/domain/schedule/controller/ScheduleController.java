@@ -1,6 +1,7 @@
 package kyj.schedule_manage_v2.domain.schedule.controller;
 
-import kyj.schedule_manage_v2.common.annotation.SessionCheck;
+import jakarta.validation.Valid;
+import kyj.schedule_manage_v2.common.annotation.LoginSessionCheck;
 import kyj.schedule_manage_v2.domain.schedule.dto.*;
 import kyj.schedule_manage_v2.domain.schedule.service.ScheduleService;
 import kyj.schedule_manage_v2.domain.user.dto.LoginSessionData;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static kyj.schedule_manage_v2.common.util.Constants.LOGIN_SESSION_NAME;
+
 @RestController
 @RequiredArgsConstructor
 public class ScheduleController {
@@ -18,9 +21,9 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
 
     @PostMapping("/api/schedules")
-    @SessionCheck
-    public ResponseEntity<CreateScheduleResponse> saveSchedule(@RequestBody CreateScheduleRequest request
-    , @SessionAttribute(name = "loginUser") LoginSessionData loginSessionData) {
+    @LoginSessionCheck
+    public ResponseEntity<CreateScheduleResponse> saveSchedule(@Valid @RequestBody CreateScheduleRequest request
+            , @SessionAttribute(name = LOGIN_SESSION_NAME) LoginSessionData loginSessionData) {
         return ResponseEntity.status(HttpStatus.CREATED).body(scheduleService.saveSchedule(request, loginSessionData));
     }
 
@@ -36,17 +39,18 @@ public class ScheduleController {
     }
 
     @PutMapping("/api/schedules/{schedule_id}")
-    @SessionCheck
+    @LoginSessionCheck
     public ResponseEntity<UpdateScheduleResponse> updateSchedule(@PathVariable(name = "schedule_id") Long scheduleId
-            , @RequestBody UpdateScheduleRequest request, @SessionAttribute(name = "loginUser") LoginSessionData loginSessionData) {
+            , @Valid @RequestBody UpdateScheduleRequest request
+            , @SessionAttribute(name = LOGIN_SESSION_NAME) LoginSessionData loginSessionData) {
         return ResponseEntity.status(HttpStatus.OK).body(scheduleService.updateSchedule(scheduleId, request, loginSessionData));
 
     }
 
     @DeleteMapping("/api/schedules/{schedule_id}")
-    @SessionCheck
+    @LoginSessionCheck
     public ResponseEntity<Void> deleteSchedule(@PathVariable(name = "schedule_id") Long scheduleId
-            , @SessionAttribute(name = "loginUser") LoginSessionData loginSessionData) {
+            , @SessionAttribute(name = LOGIN_SESSION_NAME) LoginSessionData loginSessionData) {
         scheduleService.deleteSchedule(scheduleId, loginSessionData);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
