@@ -59,8 +59,13 @@ public class UserService {
                 .toList();
     }
 
-    public UpdateUserResponse updateUser(Long userId, UpdateUserRequest request) {
+    public UpdateUserResponse updateUser(Long userId, UpdateUserRequest request, LoginSessionData loginSessionData) {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalStateException("없는 유저 입니다"));
+
+        if(!user.getId().equals(loginSessionData.id())) {
+            throw new IllegalStateException("본인의 계정 정보만 수정 할 수 있습니다");
+        }
+
         user.update(request.getUserName(), request.getEmail(),  request.getPassword());
 
         return UpdateUserResponse
@@ -73,9 +78,11 @@ public class UserService {
                 .build();
     }
 
-    public void deleteUser(Long userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new IllegalStateException("없는 유저 입니다");
+    public void deleteUser(Long userId, LoginSessionData loginSessionData) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalStateException("없는 유저 입니다"));
+
+        if(!user.getId().equals(loginSessionData.id())) {
+            throw new IllegalStateException("본인의 계정 정보만 수정 할 수 있습니다");
         }
 
         userRepository.deleteById(userId);
