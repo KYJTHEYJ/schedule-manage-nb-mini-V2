@@ -2,10 +2,14 @@ package kyj.schedule_manage_v2.domain.schedule.entity;
 
 import jakarta.persistence.*;
 import kyj.schedule_manage_v2.common.util.entity.Base;
+import kyj.schedule_manage_v2.domain.comment.entity.Comment;
 import kyj.schedule_manage_v2.domain.user.entity.User;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -21,6 +25,9 @@ public class Schedule extends Base {
 
     private String title;
     private String content;
+
+    @OneToMany(mappedBy = "schedule")
+    private List<Comment> comments = new ArrayList<>();
 
     public Schedule(User user, String title, String content) {
         this.user = user;
