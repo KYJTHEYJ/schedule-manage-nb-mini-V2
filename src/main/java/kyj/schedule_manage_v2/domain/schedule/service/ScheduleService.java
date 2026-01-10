@@ -35,7 +35,7 @@ public class ScheduleService {
         return CreateScheduleResponse
                 .builder()
                 .id(saveSchedule.getId())
-                .userId(loginSessionData.id())
+                .userId(saveSchedule.getUser().getId())
                 .userName(saveSchedule.getUser().getUserName())
                 .title(saveSchedule.getTitle())
                 .content(saveSchedule.getContent())
