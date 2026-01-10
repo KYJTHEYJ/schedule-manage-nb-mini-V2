@@ -3,12 +3,11 @@ package kyj.schedule_manage_v2.domain.user.service;
 import kyj.schedule_manage_v2.common.config.PasswordEncoder;
 import kyj.schedule_manage_v2.common.exception.LoginErrorException;
 import kyj.schedule_manage_v2.common.exception.NotFoundDataErrorException;
-import kyj.schedule_manage_v2.common.exception.UnAuthroizedAccessErrorException;
+import kyj.schedule_manage_v2.common.exception.UnAuthorizedAccessErrorException;
 import kyj.schedule_manage_v2.domain.user.dto.*;
 import kyj.schedule_manage_v2.domain.user.entity.User;
 import kyj.schedule_manage_v2.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +41,7 @@ public class UserService {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundDataErrorException("없는 유저 입니다"));
 
         if (!user.getId().equals(loginSessionData.id())) {
-            throw new UnAuthroizedAccessErrorException("본인의 계정 정보만 수정 할 수 있습니다");
+            throw new UnAuthorizedAccessErrorException("본인의 계정 정보만 수정 할 수 있습니다");
         }
 
         return SearchUserResponse
@@ -75,7 +74,7 @@ public class UserService {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundDataErrorException("없는 유저 입니다"));
 
         if (!user.getId().equals(loginSessionData.id())) {
-            throw new UnAuthroizedAccessErrorException("본인의 계정 정보만 수정 할 수 있습니다");
+            throw new UnAuthorizedAccessErrorException("본인의 계정 정보만 수정 할 수 있습니다");
         }
 
         user.update(request.getUserName(), request.getEmail(), passwordEncoder.encode(request.getPassword()));
@@ -95,7 +94,7 @@ public class UserService {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundDataErrorException("없는 유저 입니다"));
 
         if (!user.getId().equals(loginSessionData.id())) {
-            throw new UnAuthroizedAccessErrorException("본인의 계정 정보만 수정 할 수 있습니다");
+            throw new UnAuthorizedAccessErrorException("본인의 계정 정보만 수정 할 수 있습니다");
         }
 
         userRepository.deleteById(userId);

@@ -1,8 +1,7 @@
 package kyj.schedule_manage_v2.domain.schedule.service;
 
 import kyj.schedule_manage_v2.common.exception.NotFoundDataErrorException;
-import kyj.schedule_manage_v2.common.exception.UnAuthroizedAccessErrorException;
-import kyj.schedule_manage_v2.domain.comment.repository.CommentRepository;
+import kyj.schedule_manage_v2.common.exception.UnAuthorizedAccessErrorException;
 import kyj.schedule_manage_v2.domain.schedule.dto.*;
 import kyj.schedule_manage_v2.domain.schedule.entity.Schedule;
 import kyj.schedule_manage_v2.domain.user.dto.LoginSessionData;
@@ -25,7 +24,6 @@ import java.util.List;
 public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
-    private final CommentRepository commentRepository;
 
     @Transactional
     public CreateScheduleResponse saveSchedule(CreateScheduleRequest request, LoginSessionData loginSessionData) {
@@ -48,16 +46,21 @@ public class ScheduleService {
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public SearchScheduleResponse getSchedule(Long scheduleId) {
-        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new NotFoundDataErrorException("없는 일정 입니다"));
+        ScheduleWithCount scheduleWithCount
+                = scheduleRepository.findByIdWithCount(scheduleId).orElseThrow(() -> new NotFoundDataErrorException("없는 일정 입니다"));
+
+        Schedule schedule = scheduleWithCount.getSchedule();
+        String userName = scheduleWithCount.getUserName();
+        Long commentCount = scheduleWithCount.getCommentCount();
 
         return SearchScheduleResponse
                 .builder()
                 .id(schedule.getId())
                 .userId(schedule.getUser().getId())
-                .userName(schedule.getUser().getUserName())
+                .userName(userName)
                 .title(schedule.getTitle())
                 .content(schedule.getContent())
-                .commentCount(schedule.getComments().size())
+                .commentCount(commentCount)
                 .createAt(schedule.getCreateAt())
                 .updateAt(schedule.getUpdateAt())
                 .build();
@@ -65,20 +68,25 @@ public class ScheduleService {
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<SearchScheduleResponse> getAllSchedule(Integer pageNumber, Integer pageSize) {
-        return scheduleRepository.findAll(PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.DESC, "updateAt")))
+        return scheduleRepository.findAllWithCount(PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.DESC, "updateAt")))
                 .stream()
-                .map(schedule ->
-                    SearchScheduleResponse
+                .map(scheduleWithCount -> {
+                    Schedule schedule = scheduleWithCount.getSchedule();
+                    String userName = scheduleWithCount.getUserName();
+                    Long commentCount = scheduleWithCount.getCommentCount();
+
+                    return SearchScheduleResponse
                             .builder()
                             .id(schedule.getId())
-                            .userId(schedule.getUser().getId())
-                            .userName(schedule.getUser().getUserName())
+                            .userId(schedule.getId())
+                            .userName(userName)
                             .title(schedule.getTitle())
                             .content(schedule.getContent())
-                            .commentCount(schedule.getComments().size())
+                            .commentCount(commentCount)
                             .createAt(schedule.getCreateAt())
                             .updateAt(schedule.getUpdateAt())
-                            .build())
+                            .build();
+                })
                 .toList();
     }
 
@@ -87,7 +95,7 @@ public class ScheduleService {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new NotFoundDataErrorException("없는 일정 입니다"));
 
         if (!schedule.getUser().getId().equals(loginSessionData.id())) {
-            throw new UnAuthroizedAccessErrorException("본인의 일정만 수정할 수 있습니다");
+            throw new UnAuthorizedAccessErrorException("본인의 일정만 수정할 수 있습니다");
         }
 
         schedule.update(request.getTitle(), request.getContent());
@@ -108,7 +116,7 @@ public class ScheduleService {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new NotFoundDataErrorException("없는 일정 입니다"));
 
         if (!schedule.getUser().getId().equals(loginSessionData.id())) {
-            throw new UnAuthroizedAccessErrorException("본인의 일정만 삭제할 수 있습니다");
+            throw new UnAuthorizedAccessErrorException("본인의 일정만 삭제할 수 있습니다");
         }
 
         scheduleRepository.deleteById(scheduleId);
