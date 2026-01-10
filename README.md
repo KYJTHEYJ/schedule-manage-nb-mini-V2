@@ -264,7 +264,7 @@ url : /api/users/1
 ```
 
 ### 유저 삭제하기
-- URL : /api/users/:id
+- URL : /api/users/:user_id
 - HTTP Method : DELETE
 - Response HTTP Status : 204 No Content
 - Description
