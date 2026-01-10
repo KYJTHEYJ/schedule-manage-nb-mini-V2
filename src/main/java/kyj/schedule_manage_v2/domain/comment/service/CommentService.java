@@ -44,11 +44,14 @@ public class CommentService {
     public SearchCommentResponse getComment(Long scheduleId, Long commentId) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundDataErrorException("없는 댓글 입니다"));
 
+        if(!comment.getSchedule().getId().equals(scheduleId))
+            throw new NotFoundDataErrorException("해당 일정에 댓글이 없습니다");
+
         return SearchCommentResponse
                 .builder()
                 .id(comment.getId())
                 .content(comment.getContent())
-                .scheduleId(scheduleId)
+                .scheduleId(comment.getSchedule().getId())
                 .userId(comment.getUser().getId())
                 .createdAt(comment.getCreateAt())
                 .updatedAt(comment.getUpdateAt())
@@ -56,13 +59,12 @@ public class CommentService {
     }
 
     public List<SearchCommentResponse> getAllComment(Long scheduleId) {
-        return commentRepository.findAll()
-                .stream()
-                .map(comment -> SearchCommentResponse
+        return commentRepository.findCommentsByScheduleId(scheduleId)
+                .stream().map(comment -> SearchCommentResponse
                         .builder()
                         .id(comment.getId())
                         .content(comment.getContent())
-                        .scheduleId(scheduleId)
+                        .scheduleId(comment.getSchedule().getId())
                         .userId(comment.getUser().getId())
                         .createdAt(comment.getCreateAt())
                         .updatedAt(comment.getUpdateAt())

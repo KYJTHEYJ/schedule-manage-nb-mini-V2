@@ -16,10 +16,10 @@ public class Comment extends Base {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String content;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "fk_user_id", value = ConstraintMode.NO_CONSTRAINT))
     private User user;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "schedule_id", foreignKey = @ForeignKey(name = "fk_schedule_id", value = ConstraintMode.NO_CONSTRAINT))
     private Schedule schedule;
 
@@ -27,9 +27,5 @@ public class Comment extends Base {
         this.content = content;
         this.user = user;
         this.schedule = schedule;
-    }
-
-    public void update(String content) {
-        this.content = content;
     }
 }
