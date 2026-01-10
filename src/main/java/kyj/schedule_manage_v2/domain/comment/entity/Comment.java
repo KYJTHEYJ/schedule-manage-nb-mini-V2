@@ -16,11 +16,11 @@ public class Comment extends Base {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String content;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "fk_user_id", value = ConstraintMode.NO_CONSTRAINT))
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false ,foreignKey = @ForeignKey(name = "fk_user_id", value = ConstraintMode.NO_CONSTRAINT))
     private User user;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "schedule_id", foreignKey = @ForeignKey(name = "fk_schedule_id", value = ConstraintMode.NO_CONSTRAINT))
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "schedule_id", nullable = false, foreignKey = @ForeignKey(name = "fk_schedule_id", value = ConstraintMode.NO_CONSTRAINT))
     private Schedule schedule;
 
     public Comment(String content, User user, Schedule schedule) {
