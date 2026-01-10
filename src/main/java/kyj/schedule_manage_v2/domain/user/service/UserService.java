@@ -10,6 +10,8 @@ import kyj.schedule_manage_v2.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,6 +22,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     //region user CRUD
+    @Transactional
     public CreateUserResponse saveUser(CreateUserRequest request) {
         User user = new User(request.getUserName(), request.getEmail(), passwordEncoder.encode(request.getPassword()));
 
@@ -34,6 +37,7 @@ public class UserService {
                 .build();
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public SearchUserResponse getUser(Long userId, LoginSessionData loginSessionData) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundDataErrorException("없는 유저 입니다"));
 
@@ -51,6 +55,7 @@ public class UserService {
                 .build();
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<SearchUserResponse> getAllUser() {
         return userRepository.findAll()
                 .stream()
@@ -65,6 +70,7 @@ public class UserService {
                 .toList();
     }
 
+    @Transactional
     public UpdateUserResponse updateUser(Long userId, UpdateUserRequest request, LoginSessionData loginSessionData) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundDataErrorException("없는 유저 입니다"));
 
@@ -84,6 +90,7 @@ public class UserService {
                 .build();
     }
 
+    @Transactional
     public void deleteUser(Long userId, LoginSessionData loginSessionData) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundDataErrorException("없는 유저 입니다"));
 

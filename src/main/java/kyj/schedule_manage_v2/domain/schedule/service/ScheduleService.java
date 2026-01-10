@@ -2,6 +2,7 @@ package kyj.schedule_manage_v2.domain.schedule.service;
 
 import kyj.schedule_manage_v2.common.exception.NotFoundDataErrorException;
 import kyj.schedule_manage_v2.common.exception.UnAuthroizedAccessErrorException;
+import kyj.schedule_manage_v2.domain.comment.repository.CommentRepository;
 import kyj.schedule_manage_v2.domain.schedule.dto.*;
 import kyj.schedule_manage_v2.domain.schedule.entity.Schedule;
 import kyj.schedule_manage_v2.domain.user.dto.LoginSessionData;
@@ -10,7 +11,11 @@ import kyj.schedule_manage_v2.domain.schedule.repository.ScheduleRepository;
 import kyj.schedule_manage_v2.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,7 +25,9 @@ import java.util.List;
 public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
 
+    @Transactional
     public CreateScheduleResponse saveSchedule(CreateScheduleRequest request, LoginSessionData loginSessionData) {
         User user = userRepository.findById(loginSessionData.id()).orElseThrow(() -> new NotFoundDataErrorException("없는 유저 입니다"));
 
@@ -39,6 +46,7 @@ public class ScheduleService {
                 .build();
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public SearchScheduleResponse getSchedule(Long scheduleId) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new NotFoundDataErrorException("없는 일정 입니다"));
 
@@ -49,13 +57,15 @@ public class ScheduleService {
                 .userName(schedule.getUser().getUserName())
                 .title(schedule.getTitle())
                 .content(schedule.getContent())
+                .commentCount(schedule.getComments().size())
                 .createAt(schedule.getCreateAt())
                 .updateAt(schedule.getUpdateAt())
                 .build();
     }
 
-    public List<SearchScheduleResponse> getAllSchedule() {
-        return scheduleRepository.findAll()
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<SearchScheduleResponse> getAllSchedule(Integer pageNumber, Integer pageSize) {
+        return scheduleRepository.findAll(PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.DESC, "updateAt")))
                 .stream()
                 .map(schedule ->
                     SearchScheduleResponse
@@ -65,12 +75,14 @@ public class ScheduleService {
                             .userName(schedule.getUser().getUserName())
                             .title(schedule.getTitle())
                             .content(schedule.getContent())
+                            .commentCount(schedule.getComments().size())
                             .createAt(schedule.getCreateAt())
                             .updateAt(schedule.getUpdateAt())
                             .build())
                 .toList();
     }
 
+    @Transactional
     public UpdateScheduleResponse updateSchedule(Long scheduleId, UpdateScheduleRequest request, LoginSessionData loginSessionData) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new NotFoundDataErrorException("없는 일정 입니다"));
 
@@ -91,6 +103,7 @@ public class ScheduleService {
                 .build();
     }
 
+    @Transactional
     public void deleteSchedule(Long scheduleId, LoginSessionData loginSessionData) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new NotFoundDataErrorException("없는 일정 입니다"));
 

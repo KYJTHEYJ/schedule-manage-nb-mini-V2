@@ -1,42 +1,31 @@
-package kyj.schedule_manage_v2.domain.schedule.entity;
+package kyj.schedule_manage_v2.domain.comment.entity;
 
 import jakarta.persistence.*;
 import kyj.schedule_manage_v2.common.util.entity.Base;
-import kyj.schedule_manage_v2.domain.comment.entity.Comment;
+import kyj.schedule_manage_v2.domain.schedule.entity.Schedule;
 import kyj.schedule_manage_v2.domain.user.entity.User;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Schedule extends Base {
+public class Comment extends Base {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    private String content;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "fk_user_id", value = ConstraintMode.NO_CONSTRAINT))
     private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "schedule_id", foreignKey = @ForeignKey(name = "fk_schedule_id", value = ConstraintMode.NO_CONSTRAINT))
+    private Schedule schedule;
 
-    private String title;
-    private String content;
-
-    @OneToMany(mappedBy = "schedule")
-    private List<Comment> comments = new ArrayList<>();
-
-    public Schedule(User user, String title, String content) {
+    public Comment(String content, User user, Schedule schedule) {
+        this.content = content;
         this.user = user;
-        this.title = title;
-        this.content = content;
-    }
-
-    public void update(String title, String content) {
-        this.title = title;
-        this.content = content;
+        this.schedule = schedule;
     }
 }

@@ -48,8 +48,10 @@ public class UserController {
     @DeleteMapping("/api/users/{user_id}")
     @LoginSessionCheck
     public ResponseEntity<Void> deleteUser(@PathVariable(name = "user_id") Long userId
-            , @SessionAttribute(name = LOGIN_SESSION_NAME) LoginSessionData loginSessionData) {
+            , @SessionAttribute(name = LOGIN_SESSION_NAME) LoginSessionData loginSessionData
+            , HttpSession session) {
         userService.deleteUser(userId, loginSessionData);
+        session.invalidate();
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
     //endregion

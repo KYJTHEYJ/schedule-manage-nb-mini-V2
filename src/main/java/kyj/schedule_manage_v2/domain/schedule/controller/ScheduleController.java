@@ -34,8 +34,11 @@ public class ScheduleController {
     }
 
     @GetMapping("/api/schedules")
-    public ResponseEntity<List<SearchScheduleResponse>> getAllSchedule() {
-        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.getAllSchedule());
+    public ResponseEntity<List<SearchScheduleResponse>> getAllSchedule(
+            @RequestParam(required = false, defaultValue = "0") Integer pageNumber
+            , @RequestParam(required = false, defaultValue = "10") Integer pageSize
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.getAllSchedule(pageNumber, pageSize));
     }
 
     @PutMapping("/api/schedules/{schedule_id}")

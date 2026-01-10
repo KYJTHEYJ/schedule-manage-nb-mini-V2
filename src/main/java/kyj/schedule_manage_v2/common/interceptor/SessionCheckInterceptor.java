@@ -16,6 +16,9 @@ import static kyj.schedule_manage_v2.common.util.Constants.LOGIN_SESSION_NAME;
 public class SessionCheckInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) {
+        // 기타 URL도 처리되어 메서드를 못찾는다면 통과
+        if(!(handler instanceof HandlerMethod)) return true;
+
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         LoginSessionCheck loginSessionCheck = handlerMethod.getMethodAnnotation(LoginSessionCheck.class);
 
