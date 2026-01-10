@@ -30,7 +30,7 @@ public class UserController {
     @LoginSessionCheck
     public ResponseEntity<SearchUserResponse> getUser(@PathVariable(name = "user_id") Long userId
             , @SessionAttribute(name = LOGIN_SESSION_NAME) LoginSessionData loginSessionData) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(userId,  loginSessionData));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(userId, loginSessionData));
     }
 
     @GetMapping("/api/users")
@@ -38,7 +38,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getAllUser());
     }
 
-    @PutMapping("/api/users/{user_id}")
+    @PatchMapping("/api/users/{user_id}")
     @LoginSessionCheck
     public ResponseEntity<UpdateUserResponse> updateUser(@PathVariable(name = "user_id") Long userId
             , @RequestBody UpdateUserRequest request
@@ -61,7 +61,7 @@ public class UserController {
     @PostMapping("/api/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request
             , HttpSession session) {
-        if(session.getAttribute(LOGIN_SESSION_NAME) != null)
+        if (session.getAttribute(LOGIN_SESSION_NAME) != null)
             throw new UnAuthorizedAccessErrorException("정상적인 접근이 아닙니다");
 
         LoginResponse loginResponse = userService.login(request);
@@ -74,9 +74,10 @@ public class UserController {
     }
 
     @PostMapping("/api/logout")
+    @LoginSessionCheck
     public ResponseEntity<Void> logOut(@SessionAttribute(name = LOGIN_SESSION_NAME) LoginSessionData loginSessionData
             , HttpSession session) {
-        if(loginSessionData == null) {
+        if (loginSessionData == null) {
             throw new UnAuthorizedAccessErrorException("정상적인 접근이 아닙니다");
         }
 

@@ -1,5 +1,6 @@
 package kyj.schedule_manage_v2.domain.comment.service;
 
+import kyj.schedule_manage_v2.common.annotation.LoginSessionCheck;
 import kyj.schedule_manage_v2.common.exception.NotFoundDataErrorException;
 import kyj.schedule_manage_v2.domain.comment.dto.CommentCreateRequest;
 import kyj.schedule_manage_v2.domain.comment.dto.CommentCreateResponse;
@@ -26,6 +27,7 @@ public class CommentService {
     private final ScheduleRepository scheduleRepository;
 
     @Transactional
+    @LoginSessionCheck
     public CommentCreateResponse saveComment(Long scheduleId, CommentCreateRequest request, LoginSessionData loginSessionData) {
         User user = userRepository.findById(loginSessionData.id()).orElseThrow(() -> new NotFoundDataErrorException("없는 유저 입니다"));
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new NotFoundDataErrorException("없는 일정 입니다"));
