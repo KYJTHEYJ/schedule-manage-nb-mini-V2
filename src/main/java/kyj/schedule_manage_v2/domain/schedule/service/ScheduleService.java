@@ -11,6 +11,8 @@ import kyj.schedule_manage_v2.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,6 +23,7 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
 
+    @Transactional
     public CreateScheduleResponse saveSchedule(CreateScheduleRequest request, LoginSessionData loginSessionData) {
         User user = userRepository.findById(loginSessionData.id()).orElseThrow(() -> new NotFoundDataErrorException("없는 유저 입니다"));
 
@@ -39,6 +42,7 @@ public class ScheduleService {
                 .build();
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public SearchScheduleResponse getSchedule(Long scheduleId) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new NotFoundDataErrorException("없는 일정 입니다"));
 
@@ -54,6 +58,7 @@ public class ScheduleService {
                 .build();
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<SearchScheduleResponse> getAllSchedule() {
         return scheduleRepository.findAll()
                 .stream()
@@ -71,6 +76,7 @@ public class ScheduleService {
                 .toList();
     }
 
+    @Transactional
     public UpdateScheduleResponse updateSchedule(Long scheduleId, UpdateScheduleRequest request, LoginSessionData loginSessionData) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new NotFoundDataErrorException("없는 일정 입니다"));
 
@@ -91,6 +97,7 @@ public class ScheduleService {
                 .build();
     }
 
+    @Transactional
     public void deleteSchedule(Long scheduleId, LoginSessionData loginSessionData) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new NotFoundDataErrorException("없는 일정 입니다"));
 

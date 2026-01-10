@@ -13,6 +13,8 @@ import kyj.schedule_manage_v2.domain.user.entity.User;
 import kyj.schedule_manage_v2.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,6 +25,7 @@ public class CommentService {
     private final UserRepository userRepository;
     private final ScheduleRepository scheduleRepository;
 
+    @Transactional
     public CommentCreateResponse saveComment(Long scheduleId, CommentCreateRequest request, LoginSessionData loginSessionData) {
         User user = userRepository.findById(loginSessionData.id()).orElseThrow(() -> new NotFoundDataErrorException("없는 유저 입니다"));
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(() -> new NotFoundDataErrorException("없는 일정 입니다"));
@@ -41,6 +44,7 @@ public class CommentService {
                 .build();
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public SearchCommentResponse getComment(Long scheduleId, Long commentId) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundDataErrorException("없는 댓글 입니다"));
 
@@ -58,6 +62,7 @@ public class CommentService {
                 .build();
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<SearchCommentResponse> getAllComment(Long scheduleId) {
         return commentRepository.findCommentsByScheduleId(scheduleId)
                 .stream().map(comment -> SearchCommentResponse
