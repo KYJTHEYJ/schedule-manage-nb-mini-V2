@@ -1,4 +1,4 @@
-package kyj.schedule_manage_v2.common.intercepter;
+package kyj.schedule_manage_v2.common.interceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,8 +10,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import static kyj.schedule_manage_v2.common.util.Constants.LOGIN_SESSION_NAME;
+
 @Component
-public class SessionCheckIntercepter implements HandlerInterceptor {
+public class SessionCheckInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Object handler) {
         HandlerMethod handlerMethod = (HandlerMethod) handler;
@@ -23,7 +25,7 @@ public class SessionCheckIntercepter implements HandlerInterceptor {
 
         HttpSession session = request.getSession(false);
 
-        if (session == null || session.getAttribute("LOGIN_SESSION_NAME") == null) {
+        if (session == null || session.getAttribute(LOGIN_SESSION_NAME) == null) {
             throw new UnAuthroizedAccessErrorException("로그인 되지 않은 상태의 접근입니다");
         }
 
