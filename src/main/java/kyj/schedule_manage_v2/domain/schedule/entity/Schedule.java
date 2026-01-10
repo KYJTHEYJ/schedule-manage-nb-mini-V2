@@ -26,9 +26,6 @@ public class Schedule extends Base {
     private String title;
     private String content;
 
-    @OneToMany(mappedBy = "schedule")
-    private List<Comment> comments = new ArrayList<>();
-
     public Schedule(User user, String title, String content) {
         this.user = user;
         this.title = title;

@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import kyj.schedule_manage_v2.common.annotation.LoginSessionCheck;
-import kyj.schedule_manage_v2.common.exception.UnAuthroizedAccessErrorException;
+import kyj.schedule_manage_v2.common.exception.UnAuthorizedAccessErrorException;
 import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
@@ -29,7 +29,7 @@ public class SessionCheckInterceptor implements HandlerInterceptor {
         HttpSession session = request.getSession(false);
 
         if (session == null || session.getAttribute(LOGIN_SESSION_NAME) == null) {
-            throw new UnAuthroizedAccessErrorException("로그인 되지 않은 상태의 접근입니다");
+            throw new UnAuthorizedAccessErrorException("로그인 되지 않은 상태의 접근입니다");
         }
 
         return true;

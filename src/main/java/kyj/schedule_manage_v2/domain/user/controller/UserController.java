@@ -3,6 +3,7 @@ package kyj.schedule_manage_v2.domain.user.controller;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import kyj.schedule_manage_v2.common.annotation.LoginSessionCheck;
+import kyj.schedule_manage_v2.common.exception.UnAuthorizedAccessErrorException;
 import kyj.schedule_manage_v2.domain.user.dto.*;
 import kyj.schedule_manage_v2.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -60,6 +61,9 @@ public class UserController {
     @PostMapping("/api/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request
             , HttpSession session) {
+        if(session.getAttribute(LOGIN_SESSION_NAME) != null)
+            throw new UnAuthorizedAccessErrorException("정상적인 접근이 아닙니다");
+
         LoginResponse loginResponse = userService.login(request);
         LoginSessionData loginSessionData = LoginSessionData
                 .builder()
@@ -73,7 +77,7 @@ public class UserController {
     public ResponseEntity<Void> logOut(@SessionAttribute(name = LOGIN_SESSION_NAME) LoginSessionData loginSessionData
             , HttpSession session) {
         if(loginSessionData == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            throw new UnAuthorizedAccessErrorException("정상적인 접근이 아닙니다");
         }
 
         session.invalidate();
