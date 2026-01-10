@@ -4,10 +4,12 @@ import kyj.schedule_manage_v2.common.config.PasswordEncoder;
 import kyj.schedule_manage_v2.common.exception.LoginErrorException;
 import kyj.schedule_manage_v2.common.exception.NotFoundDataErrorException;
 import kyj.schedule_manage_v2.common.exception.UnAuthorizedAccessErrorException;
+import kyj.schedule_manage_v2.common.exception.handler.ServiceErrorException;
 import kyj.schedule_manage_v2.domain.user.dto.*;
 import kyj.schedule_manage_v2.domain.user.entity.User;
 import kyj.schedule_manage_v2.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,10 @@ public class UserService {
     @Transactional
     public CreateUserResponse saveUser(CreateUserRequest request) {
         User user = new User(request.getUserName(), request.getEmail(), passwordEncoder.encode(request.getPassword()));
+
+        if(userRepository.existsByEmail(request.getEmail())) {
+            throw new ServiceErrorException(HttpStatus.BAD_REQUEST, "이미 가입된 이메일입니다, 로그인 후 이용하세요");
+        }
 
         User saveUser = userRepository.save(user);
         return CreateUserResponse
