@@ -13,20 +13,30 @@ public class User extends Base {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
     private String userName;
+    @Column(nullable = false, unique = true)
     private String email;
     @Column(nullable = false)
     private String password;
 
-    public User(String userName, String email, String password) {
-        this.userName = userName;
+    public User(String email, String userName, String password) {
         this.email = email;
+        this.userName = userName;
         this.password = password;
     }
 
-    public void update(String userName, String email, String password) {
-        this.userName = userName;
-        this.email = email;
-        this.password = password;
+    public void update(String email, String userName, String password) {
+        if(email != null) {
+            this.email = email;
+        }
+
+        if(userName != null) {
+            this.userName = userName;
+        }
+
+        if(password != null) {
+            this.password = password;
+        }
     }
 }
