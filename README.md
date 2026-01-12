@@ -59,7 +59,7 @@
 - URL : /api/schedules
 - HTTP Method : GET
 - Query Parameter : pageNumber, pageSize
-  - 페이징 관련 파라미터 (pageNumber 는 조회 페이지를 (default 0), pageSize는 한 페이지 당 조회 크기 (default 10))
+  - 페이징 관련 파라미터 (pageNumber 는 조회 페이지를 (default 0), pageSize는 한 페이지 당 조회 크기 (default 10)) 
 - Response HTTP Status : 200 OK
 - Description
   - 두 쿼리 파라미터는 필수 값이 아님
