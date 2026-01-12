@@ -88,7 +88,7 @@ public class UserService {
 
         user.update(request.getEmail()
                 , request.getUserName()
-                , request.getPassword() != null ? passwordEncoder.encode(request.getPassword()) : null);
+                , request.getPassword() != null ? passwordEncoder.encode(request.getPassword()) : user.getPassword());
 
         return UpdateUserResponse
                 .builder()

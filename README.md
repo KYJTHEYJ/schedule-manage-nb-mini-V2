@@ -34,7 +34,7 @@
     "updateAt": "2026-01-10T21:19:46.352912"
 }
 ```
-  
+
 ### 일정 개별 조회하기
 - URL : /api/schedules/:schedule_id
 - HTTP Method : GET
@@ -110,7 +110,7 @@ url : /schedules?pageNumber=0?pageSize=10
 - HTTP Method : PUT
 - Content-Type : application/json
 - Response HTTP Status : 200 OK
-- Description 
+- Description
   - 제목과 내용만 수정 가능
   - 제목은 1글자 이상 100글자 이하
   - 내용은 null 제외
@@ -148,7 +148,7 @@ url : /api/schedules/1
 - Description
   - 로그인 하지 않을 경우 사용 불가
   - 로그인 계정이 작성한 일정만 삭제 가능
-    
+
 ----
 
 ### 유저 생성하기 (회원가입)
